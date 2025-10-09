@@ -294,7 +294,7 @@ const SinglePage = () => {
             </p>
             <div className="flex justify-center gap-4">
               <a
-                href="https://instagram.com/framestatestudios"
+                href="https://www.instagram.com/framestate_studio/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-3 bg-gradient-gold text-primary-foreground rounded-md font-semibold hover:shadow-glow transition-all duration-300"
@@ -302,7 +302,7 @@ const SinglePage = () => {
                 View on Instagram
               </a>
               <a
-                href="https://youtube.com/@framestatestudios"
+                href="https://www.youtube.com/@FramestateStudio"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-3 border-2 border-primary text-foreground rounded-md font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-300"
