@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Instagram, Youtube, Mail, Phone } from "lucide-react";
+import { Instagram, Youtube, Mail, Phone, Linkedin } from "lucide-react";
 import logo from "@/assets/framestate-logo.png";
 
 const Footer = () => {
@@ -54,7 +54,7 @@ const Footer = () => {
               </a>
               <div className="flex space-x-4 pt-2">
                 <a
-                  href="https://instagram.com/framestatestudios"
+                  href="https://www.instagram.com/framestate_studio/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors"
@@ -63,7 +63,16 @@ const Footer = () => {
                   <Instagram size={20} />
                 </a>
                 <a
-                  href="https://youtube.com/@framestatestudios"
+                  href="https://www.linkedin.com/company/framestate-studio/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin size={20} />
+                </a>
+                <a
+                  href="https://www.youtube.com/@FramestateStudio"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-primary transition-colors"
