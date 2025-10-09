@@ -351,7 +351,6 @@ const SinglePage = () => {
                     {pkg.name}
                   </h3>
                   <p className="text-muted-foreground text-sm mb-4">{pkg.description}</p>
-                  <p className="text-3xl font-bold text-primary">{pkg.price}</p>
                 </div>
 
                 <ul className="space-y-4 mb-8">
