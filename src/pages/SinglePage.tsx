@@ -21,7 +21,7 @@ const SinglePage = () => {
     timeSlot: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.timeSlot) {
@@ -33,18 +33,37 @@ const SinglePage = () => {
       return;
     }
 
-    // Send meeting request via WhatsApp
-    const whatsappMessage = `Hi! I'd like to schedule a 15-minute meeting.%0A%0AName: ${formData.name}%0AEmail: ${formData.email}%0APreferred Time: ${formData.timeSlot}%0A%0APlease send me the meeting link.`;
-    const whatsappUrl = `https://wa.me/919558737783?text=${whatsappMessage}`;
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-meeting-confirmation`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
-    window.open(whatsappUrl, "_blank");
+      if (!response.ok) {
+        throw new Error("Failed to send meeting confirmation");
+      }
 
-    toast({
-      title: "Opening WhatsApp",
-      description: "You'll be redirected to WhatsApp to receive your meeting link.",
-    });
+      toast({
+        title: "Meeting Scheduled! 🎉",
+        description: "A meeting link has been sent to your WhatsApp and email!",
+      });
 
-    setFormData({ name: "", email: "", timeSlot: "" });
+      setFormData({ name: "", email: "", timeSlot: "" });
+    } catch (error) {
+      console.error("Error scheduling meeting:", error);
+      toast({
+        title: "Error",
+        description: "Failed to schedule meeting. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const packages = [
@@ -647,10 +666,9 @@ const SinglePage = () => {
                       required
                     >
                       <option value="">Select a time slot</option>
-                      <option value="Morning (9:00 AM - 12:00 PM IST)">Morning (9:00 AM - 12:00 PM IST)</option>
-                      <option value="Afternoon (12:00 PM - 3:00 PM IST)">Afternoon (12:00 PM - 3:00 PM IST)</option>
-                      <option value="Evening (3:00 PM - 6:00 PM IST)">Evening (3:00 PM - 6:00 PM IST)</option>
-                      <option value="Late Evening (6:00 PM - 9:00 PM IST)">Late Evening (6:00 PM - 9:00 PM IST)</option>
+                      <option value="Morning (9:00 AM - 12:00 PM)">Morning (9:00 AM - 12:00 PM)</option>
+                      <option value="Afternoon (12:00 PM - 5:00 PM)">Afternoon (12:00 PM - 5:00 PM)</option>
+                      <option value="Evening (5:00 PM - 8:00 PM)">Evening (5:00 PM - 8:00 PM)</option>
                     </select>
                   </div>
 
@@ -659,7 +677,7 @@ const SinglePage = () => {
                       <strong>What happens next?</strong>
                     </p>
                     <p className="text-sm text-muted-foreground mt-2">
-                      After submitting, we'll send you a meeting link via WhatsApp and email within 2 hours during business hours.
+                      After submitting, we'll send you a meeting link via WhatsApp and email instantly!
                     </p>
                   </div>
 
