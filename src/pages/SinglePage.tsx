@@ -8,20 +8,23 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import heroImage from "@/assets/hero-villa.jpg";
 import behindScenes from "@/assets/behind-scenes.jpg";
+import video1 from "@/assets/video1.mp4";
+import video2 from "@/assets/video2.mp4";
+import video3 from "@/assets/video3.mp4";
+import video4 from "@/assets/video4.mp4";
 
 const SinglePage = () => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    phone: "",
-    message: "",
+    timeSlot: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.message) {
+    if (!formData.name || !formData.email || !formData.timeSlot) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields.",
@@ -30,17 +33,18 @@ const SinglePage = () => {
       return;
     }
 
-    const whatsappMessage = `Hi! I'm interested in your services.%0A%0AName: ${formData.name}%0AEmail: ${formData.email}%0APhone: ${formData.phone}%0A%0AMessage: ${formData.message}`;
+    // Send meeting request via WhatsApp
+    const whatsappMessage = `Hi! I'd like to schedule a 15-minute meeting.%0A%0AName: ${formData.name}%0AEmail: ${formData.email}%0APreferred Time: ${formData.timeSlot}%0A%0APlease send me the meeting link.`;
     const whatsappUrl = `https://wa.me/919558737783?text=${whatsappMessage}`;
 
     window.open(whatsappUrl, "_blank");
 
     toast({
       title: "Opening WhatsApp",
-      description: "You'll be redirected to WhatsApp to complete your message.",
+      description: "You'll be redirected to WhatsApp to receive your meeting link.",
     });
 
-    setFormData({ name: "", email: "", phone: "", message: "" });
+    setFormData({ name: "", email: "", timeSlot: "" });
   };
 
   const packages = [
@@ -94,48 +98,38 @@ const SinglePage = () => {
     },
   ];
 
-  const projects = [
+  const videos = [
     {
       id: 1,
-      title: "Luxury Villa - Whitefield",
-      client: "Prestige Estates",
-      thumbnail: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+      title: "Modern Luxury Villa",
+      client: "Premium Real Estate",
+      video: video1,
+      aspectRatio: "16:9",
       impact: "Sold within 2 weeks",
     },
     {
       id: 2,
-      title: "Modern Penthouse - Indiranagar",
-      client: "Brigade Group",
-      thumbnail: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
+      title: "Contemporary Penthouse",
+      client: "Elite Properties",
+      video: video2,
+      aspectRatio: "9:16",
       impact: "3x viewing requests",
     },
     {
       id: 3,
-      title: "Lakeside Villa - Sarjapur",
-      client: "Sobha Limited",
-      thumbnail: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80",
+      title: "Lakeside Villa Tour",
+      client: "Luxury Estates",
+      video: video3,
+      aspectRatio: "16:9",
       impact: "Featured in top listings",
     },
     {
       id: 4,
-      title: "Contemporary Home - HSR Layout",
-      client: "Embassy Group",
-      thumbnail: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
+      title: "Urban Living Space",
+      client: "City Developers",
+      video: video4,
+      aspectRatio: "9:16",
       impact: "100K+ social reach",
-    },
-    {
-      id: 5,
-      title: "Urban Apartment - Koramangala",
-      client: "Godrej Properties",
-      thumbnail: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80",
-      impact: "Sold above asking price",
-    },
-    {
-      id: 6,
-      title: "Heritage Villa - Jayanagar",
-      client: "Independent Owner",
-      thumbnail: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80",
-      impact: "Multiple offers received",
     },
   ];
 
@@ -260,28 +254,37 @@ const SinglePage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {projects.map((project) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            {videos.map((video) => (
               <div
-                key={project.id}
-                className="group relative overflow-hidden rounded-lg bg-card border border-border hover:border-primary transition-all duration-500 cursor-pointer"
+                key={video.id}
+                className={`group relative overflow-hidden rounded-lg bg-card border border-border hover:border-primary transition-all duration-500 ${
+                  video.aspectRatio === "9:16" ? "md:col-span-1" : "md:col-span-2"
+                }`}
               >
-                <div className="aspect-video relative overflow-hidden">
-                  <img
-                    src={project.thumbnail}
-                    alt={project.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                <div className={`relative overflow-hidden ${video.aspectRatio === "16:9" ? "aspect-video" : "aspect-[9/16]"}`}>
+                  <video
+                    src={video.video}
+                    className="w-full h-full object-cover"
+                    loop
+                    muted
+                    playsInline
+                    onMouseEnter={(e) => e.currentTarget.play()}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.pause();
+                      e.currentTarget.currentTime = 0;
+                    }}
                   />
-                  <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+                  <div className="absolute inset-0 bg-background/20 group-hover:bg-transparent transition-all duration-500 flex items-center justify-center pointer-events-none">
+                    <div className="w-16 h-16 rounded-full bg-primary/80 flex items-center justify-center group-hover:opacity-0 transition-opacity duration-300">
                       <Play className="text-primary-foreground" size={28} fill="currentColor" />
                     </div>
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">{project.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-1">{project.client}</p>
-                  <p className="text-sm text-primary font-medium">{project.impact}</p>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">{video.title}</h3>
+                  <p className="text-sm text-muted-foreground mb-1">{video.client}</p>
+                  <p className="text-sm text-primary font-medium">{video.impact}</p>
                 </div>
               </div>
             ))}
@@ -595,11 +598,14 @@ const SinglePage = () => {
                 </div>
               </div>
 
-              {/* Contact Form */}
+              {/* Meeting Scheduler */}
               <div>
                 <h2 className="text-3xl font-serif font-bold mb-6 text-foreground">
-                  Send a Message
+                  Schedule a 15-Minute Meeting
                 </h2>
+                <p className="text-muted-foreground mb-8">
+                  Book a quick consultation call to discuss your project. We'll send you the meeting link via email.
+                </p>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
@@ -630,41 +636,37 @@ const SinglePage = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
-                      Phone Number
+                    <label htmlFor="timeSlot" className="block text-sm font-medium text-foreground mb-2">
+                      Preferred Time Slot *
                     </label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      placeholder="+91 XXXXX XXXXX"
-                    />
+                    <select
+                      id="timeSlot"
+                      value={formData.timeSlot}
+                      onChange={(e) => setFormData({ ...formData, timeSlot: e.target.value })}
+                      className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                      required
+                    >
+                      <option value="">Select a time slot</option>
+                      <option value="Morning (9:00 AM - 12:00 PM IST)">Morning (9:00 AM - 12:00 PM IST)</option>
+                      <option value="Afternoon (12:00 PM - 3:00 PM IST)">Afternoon (12:00 PM - 3:00 PM IST)</option>
+                      <option value="Evening (3:00 PM - 6:00 PM IST)">Evening (3:00 PM - 6:00 PM IST)</option>
+                      <option value="Late Evening (6:00 PM - 9:00 PM IST)">Late Evening (6:00 PM - 9:00 PM IST)</option>
+                    </select>
                   </div>
 
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                      Message *
-                    </label>
-                    <Textarea
-                      id="message"
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      placeholder="Tell us about your project..."
-                      rows={6}
-                      required
-                    />
+                  <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                    <p className="text-sm text-foreground">
+                      <strong>What happens next?</strong>
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      After submitting, we'll send you a meeting link via WhatsApp and email within 2 hours during business hours.
+                    </p>
                   </div>
 
                   <Button type="submit" variant="hero" size="lg" className="w-full">
                     <Send className="mr-2" size={20} />
-                    Send Message via WhatsApp
+                    Schedule Meeting
                   </Button>
-
-                  <p className="text-sm text-muted-foreground text-center">
-                    By submitting this form, you'll be redirected to WhatsApp to complete your
-                    message.
-                  </p>
                 </form>
               </div>
             </div>
