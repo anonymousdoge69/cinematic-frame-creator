@@ -146,10 +146,13 @@ const SinglePage = () => {
       {/* HOME SECTION */}
       <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${heroImage})` }}
+          className="absolute inset-0 bg-cover bg-center brightness-110"
+          style={{ 
+            backgroundImage: `url(${heroImage})`,
+            boxShadow: 'inset 0 0 100px rgba(241, 196, 15, 0.15)'
+          }}
         >
-          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background" />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 text-center">
