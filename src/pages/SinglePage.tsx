@@ -7,6 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { VideoPlayer } from "@/components/VideoPlayer";
+import VideoCylinderCarousel from "@/components/VideoCylinderCarousel";
+import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-villa.jpg";
 import behindScenes from "@/assets/behind-scenes.jpg";
 import video1 from "@/assets/video1.mp4";
@@ -36,25 +38,15 @@ const SinglePage = () => {
     }
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-meeting-confirmation`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const { error } = await supabase.functions.invoke('send-meeting-confirmation', {
+        body: formData,
+      });
 
-      if (!response.ok) {
-        throw new Error("Failed to send meeting confirmation");
-      }
+      if (error) throw error;
 
       toast({
         title: "Meeting Scheduled! 🎉",
-        description: "A meeting link has been sent to your WhatsApp and email!",
+        description: "A meeting link has been sent to your email!",
       });
 
       setFormData({ name: "", email: "", timeSlot: "" });
@@ -164,7 +156,7 @@ const SinglePage = () => {
       title: "Downtown Loft",
       client: "Metropolitan Homes",
       video: video5,
-      aspectRatio: "9:16",
+      aspectRatio: "16:9",
       impact: "Record-breaking engagement",
     },
   ];
@@ -290,17 +282,16 @@ const SinglePage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-            {videos.map((video) => (
-              <VideoPlayer
-                key={video.id}
-                src={video.video}
-                title={video.title}
-                client={video.client}
-                impact={video.impact}
-                aspectRatio={video.aspectRatio}
-              />
-            ))}
+          <div className="mb-16">
+            <VideoCylinderCarousel
+              items={videos.map(v => ({
+                src: v.video,
+                title: v.title,
+                client: v.client,
+                impact: v.impact,
+                aspectRatio: v.aspectRatio,
+              }))}
+            />
           </div>
 
           {/* Instagram Reels Section */}
