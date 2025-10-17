@@ -12,6 +12,7 @@ import video1 from "@/assets/video1.mp4";
 import video2 from "@/assets/video2.mp4";
 import video3 from "@/assets/video3.mp4";
 import video4 from "@/assets/video4.mp4";
+import video5 from "@/assets/video5.mp4";
 
 const SinglePage = () => {
   const { toast } = useToast();
@@ -150,6 +151,14 @@ const SinglePage = () => {
       aspectRatio: "9:16",
       impact: "100K+ social reach",
     },
+    {
+      id: 5,
+      title: "Downtown Loft",
+      client: "Metropolitan Homes",
+      video: video5,
+      aspectRatio: "9:16",
+      impact: "Record-breaking engagement",
+    },
   ];
 
   return (
@@ -273,14 +282,18 @@ const SinglePage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16 auto-rows-fr">
             {videos.map((video) => (
               <div
                 key={video.id}
-                className={`group relative overflow-hidden rounded-lg bg-card border border-border hover:border-primary transition-all duration-500 ${
-                  video.aspectRatio === "9:16" ? "md:col-span-1" : "md:col-span-2"
+                className={`group relative overflow-hidden rounded-lg transition-all duration-500 ${
+                  video.aspectRatio === "9:16" ? "md:col-span-1 md:row-span-2" : "md:col-span-2 md:row-span-1"
                 }`}
+                style={{
+                  boxShadow: "0 0 40px rgba(241, 196, 15, 0.15), 0 10px 30px -10px rgba(0, 0, 0, 0.3)",
+                }}
               >
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent -z-10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className={`relative overflow-hidden ${video.aspectRatio === "16:9" ? "aspect-video" : "aspect-[9/16]"}`}>
                   <video
                     src={video.video}
@@ -294,16 +307,18 @@ const SinglePage = () => {
                       e.currentTarget.currentTime = 0;
                     }}
                   />
-                  <div className="absolute inset-0 bg-background/20 group-hover:bg-transparent transition-all duration-500 flex items-center justify-center pointer-events-none">
-                    <div className="w-16 h-16 rounded-full bg-primary/80 flex items-center justify-center group-hover:opacity-0 transition-opacity duration-300">
-                      <Play className="text-primary-foreground" size={28} fill="currentColor" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-100 group-hover:opacity-0 transition-opacity duration-300 pointer-events-none">
+                      <div className="w-16 h-16 rounded-full bg-primary/80 flex items-center justify-center">
+                        <Play className="text-primary-foreground" size={28} fill="currentColor" />
+                      </div>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-6">
+                      <h3 className="text-xl font-semibold mb-2 text-white">{video.title}</h3>
+                      <p className="text-sm text-white/80 mb-1">{video.client}</p>
+                      <p className="text-sm text-primary font-medium">{video.impact}</p>
                     </div>
                   </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-foreground">{video.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-1">{video.client}</p>
-                  <p className="text-sm text-primary font-medium">{video.impact}</p>
                 </div>
               </div>
             ))}
