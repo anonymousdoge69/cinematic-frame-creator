@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { VideoPlayer } from "@/components/VideoPlayer";
-import VideoCylinderCarousel from "@/components/VideoCylinderCarousel";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-villa.jpg";
 import behindScenes from "@/assets/behind-scenes.jpg";
@@ -282,16 +281,23 @@ const SinglePage = () => {
             </p>
           </div>
 
-          <div className="mb-16">
-            <VideoCylinderCarousel
-              items={videos.map(v => ({
-                src: v.video,
-                title: v.title,
-                client: v.client,
-                impact: v.impact,
-                aspectRatio: v.aspectRatio,
-              }))}
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {videos.map((video) => (
+              <div
+                key={video.id}
+                className={`rounded-xl border border-border bg-card overflow-hidden shadow-lg hover:shadow-elegant transition-all duration-300 ${
+                  video.aspectRatio === "9:16" ? "lg:row-span-2" : ""
+                }`}
+              >
+                <VideoPlayer
+                  src={video.video}
+                  title={video.title}
+                  client={video.client}
+                  impact={video.impact}
+                  aspectRatio={video.aspectRatio}
+                />
+              </div>
+            ))}
           </div>
 
           {/* Instagram Reels Section */}
