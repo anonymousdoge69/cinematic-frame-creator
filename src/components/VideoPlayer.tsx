@@ -12,7 +12,7 @@ interface VideoPlayerProps {
 export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const togglePlay = () => {
@@ -59,14 +59,15 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
 
   return (
     <div 
-      className={`group relative overflow-hidden rounded-lg bg-card border border-border hover:border-primary transition-all duration-500 ${
+      className={`group relative overflow-hidden rounded-lg bg-card border-2 border-primary/30 hover:border-primary transition-all duration-500 ${
         aspectRatio === "9:16" ? "md:col-span-1" : "md:col-span-2"
       }`}
       style={{
-        boxShadow: "0 0 30px rgba(241, 196, 15, 0.1), 0 8px 24px -8px rgba(0, 0, 0, 0.2)",
+        boxShadow: "0 0 40px rgba(241, 196, 15, 0.4), 0 0 80px rgba(241, 196, 15, 0.2), 0 8px 32px -8px rgba(0, 0, 0, 0.3)",
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent -z-10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent -z-10 blur-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-500"></div>
+      <div className="absolute inset-0 rounded-lg" style={{ boxShadow: "inset 0 0 60px rgba(241, 196, 15, 0.15)" }}></div>
       
       <div className={`relative overflow-hidden bg-black ${aspectRatio === "16:9" ? "aspect-video" : "aspect-[9/16]"}`}>
         <video
