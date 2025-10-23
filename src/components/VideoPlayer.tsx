@@ -53,6 +53,8 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
     const video = videoRef.current;
     if (video) {
       video.addEventListener("timeupdate", handleTimeUpdate);
+      video.volume = 1.0; // Set volume to maximum
+      video.muted = false; // Ensure video is not muted
       return () => video.removeEventListener("timeupdate", handleTimeUpdate);
     }
   }, []);
