@@ -15,14 +15,33 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const togglePlay = () => {
-    if (videoRef.current) {
+  const togglePlay = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Ensure audio is enabled on first user interaction (mobile browsers)
+    if (isMuted || video.muted) {
+      video.muted = false;
+      setIsMuted(false);
+    }
+
+    try {
       if (isPlaying) {
-        videoRef.current.pause();
+        await video.pause();
+        setIsPlaying(false);
       } else {
-        videoRef.current.play();
+        try { video.volume = 1.0; } catch {}
+        await video.play();
+        setIsPlaying(true);
       }
-      setIsPlaying(!isPlaying);
+    } catch (err) {
+      // Fallback: try unmuting and playing again
+      try {
+        video.muted = false;
+        setIsMuted(false);
+        await video.play();
+        setIsPlaying(true);
+      } catch {}
     }
   };
 
@@ -53,8 +72,12 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
     const video = videoRef.current;
     if (video) {
       video.addEventListener("timeupdate", handleTimeUpdate);
-      video.volume = 1.0; // Set volume to maximum
-      video.muted = false; // Ensure video is not muted
+      // Ensure inline playback and audio on mobile (iOS Safari)
+      video.setAttribute('playsinline', 'true');
+      video.setAttribute('webkit-playsinline', 'true');
+      // Ensure not muted by default
+      try { video.volume = 1.0; } catch {}
+      video.muted = false;
       return () => video.removeEventListener("timeupdate", handleTimeUpdate);
     }
   }, []);
@@ -79,6 +102,7 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
           loop
           muted={isMuted}
           playsInline
+          preload="metadata"
           onClick={togglePlay}
         />
         
