@@ -104,6 +104,7 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
           playsInline
           preload="metadata"
           onClick={togglePlay}
+          onTouchStart={togglePlay}
         />
         
         {/* Play/Pause Overlay */}
