@@ -14,34 +14,35 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [showSoundPrompt, setShowSoundPrompt] = useState(false);
+  const [showControls, setShowControls] = useState(false);
 
   const togglePlay = async () => {
     const video = videoRef.current;
     if (!video) return;
 
     // Ensure audio is enabled on first user interaction (mobile browsers)
-    if (isMuted || video.muted) {
-      video.muted = false;
-      setIsMuted(false);
-    }
+    video.muted = false;
+    setIsMuted(false);
+
+    try { video.volume = 1.0; } catch {}
 
     try {
       if (isPlaying) {
         await video.pause();
         setIsPlaying(false);
       } else {
-        try { video.volume = 1.0; } catch {}
         await video.play();
         setIsPlaying(true);
       }
     } catch (err) {
-      // Fallback: try unmuting and playing again
-      try {
-        video.muted = false;
-        setIsMuted(false);
-        await video.play();
-        setIsPlaying(true);
-      } catch {}
+      // If play is blocked (Android/iOS), show explicit sound prompt
+      setShowSoundPrompt(true);
+    }
+
+    // If after attempting, still muted or volume zero, show prompt
+    if (video.muted || video.volume === 0) {
+      setShowSoundPrompt(true);
     }
   };
 
@@ -49,7 +50,23 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
     if (videoRef.current) {
       videoRef.current.muted = !isMuted;
       setIsMuted(!isMuted);
+      if (!videoRef.current.muted && videoRef.current.volume > 0) {
+        setShowSoundPrompt(false);
+      }
     }
+  };
+
+  const handleUnmutePlay = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+    try { video.volume = 1.0; } catch {}
+    video.muted = false;
+    setIsMuted(false);
+    try {
+      await video.play();
+      setIsPlaying(true);
+    } catch {}
+    setShowSoundPrompt(false);
   };
 
   const handleTimeUpdate = () => {
@@ -71,14 +88,35 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
-      video.addEventListener("timeupdate", handleTimeUpdate);
-      // Ensure inline playback and audio on mobile (iOS Safari)
+      const onTime = handleTimeUpdate;
+      const onVolume = () => {
+        setIsMuted(video.muted);
+        if (!video.muted && video.volume > 0) setShowSoundPrompt(false);
+      };
+      const onPlaying = () => {
+        if (!video.muted) setShowSoundPrompt(false);
+      };
+
+      video.addEventListener("timeupdate", onTime);
+      video.addEventListener("volumechange", onVolume);
+      video.addEventListener("playing", onPlaying);
+
+      // Ensure inline playback and audio on mobile (iOS Safari + Android Chrome)
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
-      // Ensure not muted by default
       try { video.volume = 1.0; } catch {}
       video.muted = false;
-      return () => video.removeEventListener("timeupdate", handleTimeUpdate);
+
+      // Show native controls on touch devices for reliability
+      if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+        setShowControls(true);
+      }
+
+      return () => {
+        video.removeEventListener("timeupdate", onTime);
+        video.removeEventListener("volumechange", onVolume);
+        video.removeEventListener("playing", onPlaying);
+      };
     }
   }, []);
 
@@ -98,13 +136,23 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
         <video
           ref={videoRef}
           src={src}
-          className="w-full h-full object-cover cursor-pointer"
+          className="w-full h-full object-cover cursor-pointer pointer-events-auto"
           loop
           muted={isMuted}
           playsInline
           preload="metadata"
+          controls={showControls}
           onClick={togglePlay}
           onTouchStart={togglePlay}
+          onVolumeChange={() => {
+            const v = videoRef.current; if (!v) return;
+            setIsMuted(v.muted);
+            if (!v.muted && v.volume > 0) setShowSoundPrompt(false);
+          }}
+          onPlay={() => {
+            const v = videoRef.current; if (!v) return;
+            if (!v.muted) setShowSoundPrompt(false);
+          }}
         />
         
         {/* Play/Pause Overlay */}
@@ -113,6 +161,18 @@ export const VideoPlayer = ({ src, title, client, impact, aspectRatio }: VideoPl
             <div className="w-20 h-20 rounded-full bg-primary/90 flex items-center justify-center">
               <Play className="text-primary-foreground ml-1" size={32} fill="currentColor" />
             </div>
+          </div>
+        )}
+
+        {/* Sound Prompt for Mobile */}
+        {showSoundPrompt && (
+          <div className="absolute inset-x-0 bottom-16 flex justify-center z-10">
+            <button
+              onClick={handleUnmutePlay}
+              className="px-4 py-2 rounded-full bg-primary text-primary-foreground shadow-lg ring-1 ring-primary/50 hover:brightness-110 transition"
+            >
+              Tap for sound
+            </button>
           </div>
         )}
 
