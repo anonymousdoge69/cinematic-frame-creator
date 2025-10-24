@@ -144,14 +144,6 @@ const SinglePage = () => {
     },
     {
       id: 4,
-      title: "Urban Living Space",
-      client: "City Developers",
-      video: video4,
-      aspectRatio: "9:16",
-      impact: "100K+ social reach",
-    },
-    {
-      id: 5,
       title: "Downtown Loft",
       client: "Metropolitan Homes",
       video: video5,
